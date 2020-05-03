@@ -17,6 +17,10 @@ class DevelopmentConfig(BaseConfig):
     TESTING = False
     ENV = 'development'
 
+    JWT_ISSUER = 'http://127.0.0.1:4455/'
+    JWT_AUDIENCE = 'vue'
+    JWKS_URL = 'http://oathkeeper-api:4456'
+
     MONGODB_SETTINGS = {
         'host': 'mongodb://root:example@rating-service-db:27017/rating?authSource=admin'
     }
@@ -26,6 +30,10 @@ class TestingConfig(BaseConfig):
     DEBUG = False
     TESTING = True
     ENV = 'testing'
+
+    JWT_ISSUER = 'http://127.0.0.1:4455/'
+    JWT_AUDIENCE = 'vue'
+    JWKS_URL = 'http://oathkeeper-api:4456'
 
     MONGODB_SETTINGS = {
         'host': 'mongodb://root:example@rating-service-db:27017/rating-test?authSource=admin'
