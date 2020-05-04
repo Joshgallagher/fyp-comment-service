@@ -1,4 +1,4 @@
-from flask import g, request
+from flask import g, request, abort
 from flask_restful import Resource
 from src.comment.model.comment import Comment
 from src.middleware.get_subject import get_subject
@@ -15,20 +15,25 @@ class CommentResource(Resource):
         user_id = g.current_user_id
 
         try:
-            req_body = request.get_json()
+            article_id = request.get_json()['articleId']
         except Exception:
-            req_body = None
+            article_id = None
+
+        if article_id is None:
+            return {'message': 'Something went wrong.'}, 500
 
         try:
-            CommentSchema().load(
-                {'articleId': req_body['articleId'],
-                 'comment': req_body['comment']})
+            comment = request.get_json()['comment']
+        except Exception:
+            comment = None
+
+        try:
+            CommentSchema().load({'comment': comment})
         except ValidationError as e:
             return e.messages, 422
 
-        comment = Comment(user_id=user_id,
-                          article_id=req_body['articleId'],
-                          comment=req_body['comment']).save()
+        comment = Comment(
+            user_id=user_id, article_id=article_id, comment=comment).save()
         id = str(comment.id)
 
         return {'id': id}, 201
