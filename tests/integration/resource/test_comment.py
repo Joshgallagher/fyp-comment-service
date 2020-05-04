@@ -122,3 +122,15 @@ class RatingTest(IntegrationBaseTest):
             with self.assertRaises(DoesNotExist):
                 Comment.objects.get(user_id=self.token_subject)
             self.assertEqual(204, request.status_code)
+
+    def test_delete_comment_validation(self):
+        with patch('src.middleware.get_jwk.get_jwk') as get_jwk:
+            get_jwk.return_value = json.dumps(self.jwk)
+
+            request = self.app.delete(
+                '/comments/{}'.format('5eaf5b3c5a4a8de960b992a3'),
+                headers=self.headers)
+
+            self.assertEqual('Comment not found.',
+                             request.json['message'])
+            self.assertEqual(404, request.status_code)
