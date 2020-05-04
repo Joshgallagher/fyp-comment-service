@@ -4,4 +4,4 @@ from src.comment.resource.article_comments_resource import ArticleCommentsResour
 
 def register_routes(api):
     api.add_resource(ArticleCommentsResource, '/comments/article/<int:id>')
-    api.add_resource(CommentResource, '/comments')
+    api.add_resource(CommentResource, '/comments', '/comments/<string:id>')

@@ -1,4 +1,5 @@
-from flask import g, request, abort
+from datetime import datetime
+from flask import g, request
 from flask_restful import Resource
 from src.comment.model.comment import Comment
 from src.middleware.get_subject import get_subject
@@ -38,8 +39,21 @@ class CommentResource(Resource):
 
         return {'id': id}, 201
 
-    def put(self):
-        return {}, 200
+    def put(self, id):
+        try:
+            comment = request.get_json()['comment']
+        except Exception:
+            comment = None
+
+        try:
+            CommentSchema().load({'comment': comment})
+        except ValidationError as e:
+            return e.messages, 422
+
+        comment = Comment.objects.get(id=id).update(
+            comment=comment, updated_at=datetime.now())
+
+        return {}, 204
 
     def delete(self):
         return {}, 204

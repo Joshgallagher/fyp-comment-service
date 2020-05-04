@@ -12,7 +12,7 @@ class RatingTest(IntegrationBaseTest):
 
         super().setUp()
 
-    def test_create_rating(self):
+    def test_create_comment(self):
         with patch('src.middleware.get_jwk.get_jwk') as get_jwk:
             get_jwk.return_value = json.dumps(self.jwk)
 
@@ -30,7 +30,7 @@ class RatingTest(IntegrationBaseTest):
             self.assertEqual(str(new_comment.id), request.json['id'])
             self.assertEqual(201, request.status_code)
 
-    def test_create_rating_validation(self):
+    def test_create_comment_validation(self):
         with patch('src.middleware.get_jwk.get_jwk') as get_jwk:
             get_jwk.return_value = json.dumps(self.jwk)
 
@@ -55,6 +55,52 @@ class RatingTest(IntegrationBaseTest):
                 {'articleId': 1, 'comment': ''})
             request = self.app.post(
                 '/comments', headers=self.headers, data=payload)
+
+            self.assertEqual('Shorter than minimum length 1.',
+                             request.json['comment'][0])
+            self.assertEqual(422, request.status_code)
+
+    def test_update_comment(self):
+        with patch('src.middleware.get_jwk.get_jwk') as get_jwk:
+            get_jwk.return_value = json.dumps(self.jwk)
+
+            expected_comment = 'This is an updated comment.'
+
+            existing_comment = Comment(user_id=self.token_subject,
+                                       article_id=1,
+                                       comment='This is a comment.').save()
+
+            payload = json.dumps({'comment': expected_comment})
+            request = self.app.put(
+                '/comments/{}'.format(existing_comment.id),
+                headers=self.headers, data=payload)
+
+            updated_comment = Comment.objects.get(user_id=self.token_subject)
+
+            self.assertEqual(expected_comment, updated_comment.comment)
+            self.assertEqual(204, request.status_code)
+
+    def test_update_comment_validation(self):
+        with patch('src.middleware.get_jwk.get_jwk') as get_jwk:
+            get_jwk.return_value = json.dumps(self.jwk)
+
+            existing_comment = Comment(user_id=self.token_subject,
+                                       article_id=1,
+                                       comment='This is a comment.').save()
+
+            payload = json.dumps({'comment': None})
+            request = self.app.put(
+                '/comments/{}'.format(existing_comment.id),
+                headers=self.headers, data=payload)
+
+            self.assertEqual('Field may not be null.',
+                             request.json['comment'][0])
+            self.assertEqual(422, request.status_code)
+
+            payload = json.dumps({'comment': ''})
+            request = self.app.put(
+                '/comments/{}'.format(existing_comment.id),
+                headers=self.headers, data=payload)
 
             self.assertEqual('Shorter than minimum length 1.',
                              request.json['comment'][0])
