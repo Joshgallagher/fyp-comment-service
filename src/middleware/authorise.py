@@ -29,7 +29,8 @@ def authorise(f):
 
             claims = jwt.decode(token, jwk, claims_options=claims_options)
             claims.validate(
-                now=datetime.datetime.now().timestamp(), leeway=600)
+                now=datetime.datetime.now().timestamp(),
+                leeway=current_app.config['JWT_LEEWAY'])
         except Exception:
             abort(401)
         return f(*args, **kwargs)
