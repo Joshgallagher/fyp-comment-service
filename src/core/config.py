@@ -5,6 +5,8 @@ class BaseConfig(object):
     DEBUG = False
     TESTING = False
 
+    JWT_LEEWAY = 600
+
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
