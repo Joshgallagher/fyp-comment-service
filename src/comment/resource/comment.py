@@ -6,6 +6,7 @@ from src.middleware.get_subject import get_subject
 # from src.middleware.authorise import authorise
 from src.comment.schema.comment_schema import CommentSchema
 from marshmallow import ValidationError
+from mongoengine import DoesNotExist
 
 
 class CommentResource(Resource):
@@ -55,5 +56,17 @@ class CommentResource(Resource):
 
         return {}, 204
 
-    def delete(self):
+    def delete(self, id):
+        try:
+            comment = Comment.objects.get(id=id)
+        except DoesNotExist:
+            return {'message': 'Comment not found.'}, 404
+        except Exception:
+            return {'message': 'Something went wrong.'}, 500
+
+        try:
+            comment.delete()
+        except Exception:
+            return {'message': 'Something went wrong.'}, 500
+
         return {}, 204

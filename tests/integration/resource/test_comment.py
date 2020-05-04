@@ -3,6 +3,7 @@ import json
 from tests.integration.integration_base_test import IntegrationBaseTest
 from unittest.mock import patch
 from src.comment.model.comment import Comment
+from mongoengine import DoesNotExist
 
 
 class RatingTest(IntegrationBaseTest):
@@ -105,3 +106,19 @@ class RatingTest(IntegrationBaseTest):
             self.assertEqual('Shorter than minimum length 1.',
                              request.json['comment'][0])
             self.assertEqual(422, request.status_code)
+
+    def test_delete_comment(self):
+        with patch('src.middleware.get_jwk.get_jwk') as get_jwk:
+            get_jwk.return_value = json.dumps(self.jwk)
+
+            existing_comment = Comment(user_id=self.token_subject,
+                                       article_id=1,
+                                       comment='This is a comment.').save()
+
+            request = self.app.delete(
+                '/comments/{}'.format(existing_comment.id),
+                headers=self.headers)
+
+            with self.assertRaises(DoesNotExist):
+                Comment.objects.get(user_id=self.token_subject)
+            self.assertEqual(204, request.status_code)
