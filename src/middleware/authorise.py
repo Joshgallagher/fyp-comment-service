@@ -16,7 +16,7 @@ def authorise(f):
             claims_options = {
                 'aud': {
                     'essential': True,
-                    'values': ['{}'.format()]
+                    'values': ['{}'.format(current_app.config['JWT_AUDIENCE'])]
                 },
                 'iss': {
                     'essential': True,
