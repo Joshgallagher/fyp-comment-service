@@ -3,15 +3,14 @@ from flask import g, request
 from flask_restful import Resource
 from src.comment.model.comment import Comment
 from src.middleware.get_subject import get_subject
-# from src.middleware.authorise import authorise
+from src.middleware.authorise import authorise
 from src.comment.schema.comment_schema import CommentSchema
 from marshmallow import ValidationError
 from mongoengine import DoesNotExist
 
 
 class CommentResource(Resource):
-    # method_decorators = [authorise, get_subject]
-    method_decorators = [get_subject]
+    method_decorators = [authorise, get_subject]
 
     def post(self):
         user_id = g.current_user_id
