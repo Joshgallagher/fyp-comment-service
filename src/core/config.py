@@ -21,7 +21,7 @@ class DevelopmentConfig(BaseConfig):
 
     JWT_ISSUER = 'http://127.0.0.1:4455/'
     JWT_AUDIENCE = 'vue'
-    JWKS_URL = 'http://oathkeeper-api:4456'
+    JWKS_URL = 'http://host.docker.internal:4456'
 
     MONGODB_SETTINGS = {
         'host': 'mongodb://root:example@comment-service-db:27017/comment?authSource=admin'
@@ -35,7 +35,7 @@ class TestingConfig(BaseConfig):
 
     JWT_ISSUER = 'http://127.0.0.1:4455/'
     JWT_AUDIENCE = 'vue'
-    JWKS_URL = 'http://oathkeeper-api:4456'
+    JWKS_URL = 'http://host.docker.internal:4456'
 
     MONGODB_SETTINGS = {
         'host': 'mongodb://root:example@comment-service-db:27017/comment-test?authSource=admin'
